@@ -6,39 +6,52 @@ import (
   "flag"
   "strings"
   "sort"
-  "time"
-  "log"
 )
 
 func check(e error) {
   if e != nil {
-      panic(e)
+    panic(e)
   }
 }
 
-func getTopPasswords() ([]string) {
-  dat, err := ioutil.ReadFile("./top-passwords.txt")
+func getList(filename string) ([]string) {
+  data, err := ioutil.ReadFile("./" + filename + ".txt")
   check(err)
-  passwords := strings.Split(string(dat), "\n")
+  words := strings.Split(string(data), "\n")
   // Remove the last blank line
-  return passwords[:len(passwords)-1]
+  trimmed := words[:len(words)-1]
+  sort.Strings(trimmed)
+  return trimmed
+}
+
+type queryInfo struct {
+  i int
+  listName string
+}
+
+func findInList(channel chan queryInfo, target string, list []string, listName string) () {
+  i := sort.SearchStrings(list, target)
+  if i < len(list) && list[i] == target {
+    channel <- queryInfo{ i: i, listName: listName }
+    close(channel)
+  }
+  return;
 }
 
 func main() {
   target := flag.String("password", "", "Supply a password to calculate time to crack")
   flag.Parse()
-  start := time.Now()
-  topPasswords := getTopPasswords()
-  sort.Strings(topPasswords)
+  
+  passwords := getList("passwords")
+  firstnames := getList("firstnames")
+  surnames := getList("surnames")
+  channel := make(chan queryInfo)
 
-  i := sort.SearchStrings(topPasswords, *target)
-  if i < len(topPasswords) && topPasswords[i] == *target {
-      elapsed := time.Since(start)
-      log.Printf("Time taken to crack %s", elapsed)
-      fmt.Printf("Found %s in a sorted top passwords list at index %d\n", topPasswords[i], i)
-      return;
-  }
-  elapsed := time.Since(start)
-  log.Printf("Couldn't crack %s", elapsed)
+  go findInList(channel, *target, passwords, "passwords")
+  go findInList(channel, *target, firstnames, "firstnames")
+  go findInList(channel, *target, surnames, "surnames")
+
+  msg1 := <-channel
+  fmt.Println("Found password", *target, "at index", msg1.i, "in list", msg1.listName)
 
 }

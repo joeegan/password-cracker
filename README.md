@@ -7,7 +7,7 @@ Found 1234 in a sorted top passwords list at index 4
 ```
 **PLAN**
 
-Before studying this topic in detail I plan on implementing a simplistic approach to get a feel for Go.
+Simplistic approach:
 Range to be hardcoded to between 5 and 10 chars for now, alphanumeric, upper and lower cases permitted.
 
 * A. Looks up a list of most common passwords. (e.g Password1)
