@@ -1,9 +1,11 @@
-Return the time taken to crack the supplied password.
+Display the time taken to crack the supplied password
 
 ```bash
 > ./password-cracker -password=1234
+Searched 435 of 3000 surnames
+Searched 299 of 3000 firstnames
+Found password '1234' at index 4 of 3000 common passwords
 Time taken to crack 244.288µs
-Found 1234 in a sorted top passwords list at index 4
 ```
 **PLAN**
 
@@ -21,4 +23,5 @@ Range to be hardcoded to between 5 and 10 chars for now, alphanumeric, upper and
 **Next steps**
 * Run concurrent list searches
 * Expose as a service
-* Build web client
+* Build web client which displays data and uses 'time to crack' ranges to convey password strength
+* Host using AWS
